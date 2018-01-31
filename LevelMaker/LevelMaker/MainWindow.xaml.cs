@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
-
+using System.Text.RegularExpressions;
 
 namespace LevelMaker
 {
@@ -24,26 +24,75 @@ namespace LevelMaker
     public partial class MainWindow : Window
     {
         //30 / 100
-        static int gridHeight = 30;
-        static int gridWidth = 100;
+        static int totalSize = 75;
+        static int minHeight = 450;
+        static int minWidth = 150;
+        int gridHeight = 50;
+        int gridWidth = 50;
         bool leftButtonDown = false;
         bool rightButtonDown = false;
-        int numLevels = 6; 
         int tileSize = 10;
         static string green = Brushes.Green.ToString();
-        Rectangle[,] tileArray = new Rectangle[gridHeight, gridWidth];
+        Rectangle[,] tileArray = new Rectangle[totalSize, totalSize];
+        float[,] heightMapArray = new float[totalSize, totalSize];
+
         public MainWindow()
         {
             InitializeComponent();
-            
             //form button
             canvas.MouseLeftButtonDown += Window_MouseLeftButtonDown;
             canvas.MouseLeftButtonUp += Window_MouseLeftButtonUp;
             canvas.MouseRightButtonDown += Window_MouseRightButtonDown;
             canvas.MouseRightButtonUp += Window_MouseRightButtonUp;
-            for (int row = 0; row < gridHeight; row++)
+            GenerateGrid();
+            ResizeGrid();
+            XValue.Text = gridWidth.ToString();
+            YValue.Text = gridHeight.ToString();
+        }
+
+        private void ResizeGrid()
+        {
+            for (int row = 0; row < totalSize; row++)
             {
-                for (int column = 0; column < gridWidth; column++)
+                for (int column = 0; column < totalSize; column++)
+                {
+                    if (row > gridHeight - 1 || column > gridWidth - 1)
+                    {
+                        tileArray[row, column].IsEnabled = false;
+                        tileArray[row, column].Visibility = Visibility.Hidden;
+                    }
+                    else
+                    {
+                        tileArray[row, column].IsEnabled = true;
+                        tileArray[row, column].Visibility = Visibility.Visible;
+                    }
+                }
+            }
+            if (gridHeight != 0 && gridWidth != 0)
+            {
+                int width = (gridWidth * tileSize) + minWidth;
+                int height = (gridHeight * tileSize) + 40;
+                if (width < minWidth)
+                    this.Width = minWidth;
+                else
+                    this.Width = width;
+                if (height < minHeight)
+                    this.Height = minHeight;
+                else
+                    this.Height = height;
+            }
+            else
+            {
+                this.Width = minWidth;
+                this.Height = minHeight;
+            }
+        }
+
+        private void GenerateGrid()
+        {
+            for (int row = 0; row < totalSize; row++)
+            {
+                for (int column = 0; column < totalSize; column++)
                 {
                     tileArray[row, column] = new Rectangle()
                     {
@@ -59,7 +108,7 @@ namespace LevelMaker
                     canvas.Children.Add(tileArray[row, column]);
                     Canvas.SetLeft(tileArray[row, column], tileSize * column);
                     Canvas.SetTop(tileArray[row, column], tileSize * row);
-                    //if (row == gridHeight - 1 || column == gridWidth - 1 || column == 0 || row == 0)
+                    //if (row == totalSize - 1 || column == totalSize - 1 || column == 0 || row == 0)
                     //{
                     //    tileArray[row, column].Fill = Brushes.Purple;
                     //}
@@ -69,10 +118,15 @@ namespace LevelMaker
 
         private void rect_MouseButtonHeldDown(object sender, MouseEventArgs e)
         {
+            if (System.Windows.Input.Mouse.LeftButton == MouseButtonState.Released)
+                leftButtonDown = false;
+            if (System.Windows.Input.Mouse.RightButton == MouseButtonState.Released)
+                rightButtonDown = false;
+
             if (leftButtonDown)
-                  rect_MouseLeftButtonDown(sender, e);
+                rect_MouseLeftButtonDown(sender, e);
             else if (rightButtonDown)
-                  ((Rectangle)sender).Fill = Brushes.LightGray;
+                ((Rectangle)sender).Fill = Brushes.LightGray;
         }
 
         private void rect_MouseRightButtonDown(object sender, MouseEventArgs e)
@@ -149,7 +203,7 @@ namespace LevelMaker
             {
                 var result = MessageBox.Show("This file already exists, would you like to overwrite?", "File Overwrite Detected", MessageBoxButton.YesNo);
                 if (result != MessageBoxResult.Yes)
-                    return; 
+                    return;
             }
             using (StreamWriter sw = new StreamWriter(filePath))
             {
@@ -294,12 +348,12 @@ namespace LevelMaker
                 string[] files = filename.Split('\\');
                 textBox.Text = files[files.Length - 2];
                 int index = filename[filename.Length - 1] - '0';
-                LevelNumber.SelectedIndex = index -1;
+                LevelNumber.SelectedIndex = index - 1;
             }
             else
             {
                 MessageBox.Show("Invalid File");
-                return;  
+                return;
             }
             //Remove current level
             for (int row = 0; row < gridHeight; row++)
@@ -313,78 +367,78 @@ namespace LevelMaker
             string readText = File.ReadAllText(filename);
             char[] charArray = readText.ToCharArray();
 
-            int i = 0; 
-                for (int row = 0; row < gridHeight; row++)
+            int i = 0;
+            for (int row = 0; row < gridHeight; row++)
+            {
+                for (int column = 0; column < gridWidth; column++)
                 {
-                    for (int column = 0; column < gridWidth; column++)
+                    tileArray[row, column] = new Rectangle()
                     {
-                        tileArray[row, column] = new Rectangle()
-                        {
-                            Width = tileSize,
-                            Height = tileSize,
-                            Fill = Brushes.LightGray,
-                            Stroke = Brushes.Gray,
-                            StrokeThickness = 1,
-                        };
+                        Width = tileSize,
+                        Height = tileSize,
+                        Fill = Brushes.LightGray,
+                        Stroke = Brushes.Gray,
+                        StrokeThickness = 1,
+                    };
 
-                            switch (charArray[i])
-                            {
-                                case '1':
-                                    tileArray[row, column].Fill = Brushes.Green;
-                                    break;
-                                case '2':
-                                    tileArray[row, column].Fill = Brushes.Blue;
-                                    break;
-                                case '3':
-                                    tileArray[row, column].Fill = Brushes.Red;
-                                    break;
-                                case '4':
-                                    tileArray[row, column].Fill = Brushes.Yellow;
-                                    break;
-                                case '6':
-                                    tileArray[row, column].Fill = Brushes.Yellow;
-                                    break;
-                                case '8':
-                                    tileArray[row, column].Fill = Brushes.Purple;
-                                    break;
-                                case 'R':
-                                    tileArray[row, column].Fill = Brushes.Brown;
-                                    break;
-                                case 'L':
-                                    tileArray[row, column].Fill = Brushes.RosyBrown;
-                                    break;
-                                case 'U':
-                                    tileArray[row, column].Fill = Brushes.SaddleBrown;
-                                    break;
-                                case 'D':
-                                    tileArray[row, column].Fill = Brushes.SandyBrown;
-                                    break;
-                                case 'I':
-                                    tileArray[row, column].Fill = Brushes.Black;
-                                    break;
-                                case '<':
-                                    tileArray[row, column].Fill = Brushes.Aqua;
-                                    break;
-                                case '>':
-                                    tileArray[row, column].Fill = Brushes.Aquamarine;
-                                    break;
-                                case 'K':
-                                    tileArray[row, column].Fill = Brushes.DarkCyan;
-                                    break;
-                                case 'C':
-                                    tileArray[row, column].Fill = Brushes.DarkBlue;
-                                    break;
-                                case '\r':
-                                   i += 2;
-                                    break;
-                            }
-                        i++;
-                        tileArray[row, column].MouseEnter += rect_MouseButtonHeldDown;
-                        tileArray[row, column].MouseLeftButtonDown += rect_MouseLeftButtonDown;
-                        tileArray[row, column].MouseRightButtonDown += rect_MouseRightButtonDown;
-                        canvas.Children.Add(tileArray[row, column]);
-                        Canvas.SetLeft(tileArray[row, column], tileSize * column);
-                        Canvas.SetTop(tileArray[row, column], tileSize * row);
+                    switch (charArray[i])
+                    {
+                        case '1':
+                            tileArray[row, column].Fill = Brushes.Green;
+                            break;
+                        case '2':
+                            tileArray[row, column].Fill = Brushes.Blue;
+                            break;
+                        case '3':
+                            tileArray[row, column].Fill = Brushes.Red;
+                            break;
+                        case '4':
+                            tileArray[row, column].Fill = Brushes.Yellow;
+                            break;
+                        case '6':
+                            tileArray[row, column].Fill = Brushes.Yellow;
+                            break;
+                        case '8':
+                            tileArray[row, column].Fill = Brushes.Purple;
+                            break;
+                        case 'R':
+                            tileArray[row, column].Fill = Brushes.Brown;
+                            break;
+                        case 'L':
+                            tileArray[row, column].Fill = Brushes.RosyBrown;
+                            break;
+                        case 'U':
+                            tileArray[row, column].Fill = Brushes.SaddleBrown;
+                            break;
+                        case 'D':
+                            tileArray[row, column].Fill = Brushes.SandyBrown;
+                            break;
+                        case 'I':
+                            tileArray[row, column].Fill = Brushes.Black;
+                            break;
+                        case '<':
+                            tileArray[row, column].Fill = Brushes.Aqua;
+                            break;
+                        case '>':
+                            tileArray[row, column].Fill = Brushes.Aquamarine;
+                            break;
+                        case 'K':
+                            tileArray[row, column].Fill = Brushes.DarkCyan;
+                            break;
+                        case 'C':
+                            tileArray[row, column].Fill = Brushes.DarkBlue;
+                            break;
+                        case '\r':
+                            i += 2;
+                            break;
+                    }
+                    i++;
+                    tileArray[row, column].MouseEnter += rect_MouseButtonHeldDown;
+                    tileArray[row, column].MouseLeftButtonDown += rect_MouseLeftButtonDown;
+                    tileArray[row, column].MouseRightButtonDown += rect_MouseRightButtonDown;
+                    canvas.Children.Add(tileArray[row, column]);
+                    Canvas.SetLeft(tileArray[row, column], tileSize * column);
+                    Canvas.SetTop(tileArray[row, column], tileSize * row);
                     //if (row == gridHeight - 1 || column == gridWidth - 1 || column == 0 || row == 0)
                     //{
                     //    tileArray[row, column].Fill = Brushes.Purple;
@@ -429,32 +483,150 @@ namespace LevelMaker
             //        break;
             //    }
         }
-    
+
 
         private void Load_Click(object sender, RoutedEventArgs e)
         {
-            LoadPreviousLevel(); 
+            LoadPreviousLevel();
         }
 
         private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            rightButtonDown = true; 
-            
+            rightButtonDown = true;
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            leftButtonDown = true; 
+            leftButtonDown = true;
         }
 
         private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            rightButtonDown = false; 
+            rightButtonDown = false;
         }
 
         private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            leftButtonDown = false; 
+            leftButtonDown = false;
+        }
+
+        private void SliderX_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            XValue.Text = e.NewValue.ToString();
+            gridWidth = (int)e.NewValue;
+            ResizeGrid();
+        }
+
+        private void SliderY_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            YValue.Text = e.NewValue.ToString();
+            gridHeight = (int)e.NewValue;
+            ResizeGrid();
+        }
+
+        private void XValue_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (XValue.Text != "")
+                SliderX.Value = Convert.ToDouble(XValue.Text);
+        }
+
+        private void YValue_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (YValue.Text != "")
+                SliderY.Value = Convert.ToDouble(YValue.Text);
+        }
+
+        private void PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+        private static bool IsTextAllowed(string text)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            return !regex.IsMatch(text);
+        }
+
+        private void Generate_Click(object sender, RoutedEventArgs e)
+        {
+            ClearHeightMap(); 
+            Random rnd = new Random();
+            int x = rnd.Next(4, 5); 
+            for (int i = 0; i < x; i++)
+            {
+                ProcedurallyGenerate(); 
+            }
+        }
+
+        private void ClearHeightMap()
+        {
+            for (int row = 0; row < totalSize; row++)
+            {
+                for (int column = 0; column < totalSize; column++)
+                {
+                    heightMapArray[column, row] = 0; 
+                }
+            }
+        }
+        private void ProcedurallyGenerate()
+        {
+            Random rnd = new Random();
+            for (int row = 0; row < gridHeight; row++)
+            {
+                for (int column = 0; column < gridWidth; column++)
+                {
+                    if (column != 0 && row != 0)
+                    {
+                        heightMapArray[column, row] += AverageSurroundingHeight(row, column);
+                    }
+                    float random = ((float)rnd.Next(1, 1000) / 250);
+                    if (random < 3.9)
+                        random = 0;
+                    else
+                        random = 10;
+                    heightMapArray[column, row] += random;
+                    HeightToType(row, column);
+                }
+            }
+        }
+
+        private void HeightToType(int row, int column)
+        {
+            switch (heightMapArray[column, row])
+            {
+                case float n when (n <= 10):
+                    tileArray[column, row].Fill = Brushes.Blue; 
+                    break;
+                case float n when (n <= 25 && n > 10):
+                    tileArray[column, row].Fill = Brushes.Yellow;
+                    break;
+                case float n when (n <= 50 && n > 25):
+                    tileArray[column, row].Fill = Brushes.Green;
+                    break;
+                case float n when (n <= 75 && n > 50):
+                    tileArray[column, row].Fill = Brushes.DarkGreen;
+                    break;
+                case float n when (n <= 100 && n > 75):
+                    tileArray[column, row].Fill = Brushes.DarkGray;
+                    break;
+                case float n when (n > 101):
+                    tileArray[column, row].Fill = Brushes.OrangeRed;
+                    break;
+            }
+        }
+        private float AverageSurroundingHeight(int row, int column)
+        {
+            float result = 0;
+
+            result += heightMapArray[column + 1, row - 1];
+            result += heightMapArray[column + 1, row + 1];
+            result += heightMapArray[column - 1, row - 1];
+            result += heightMapArray[column - 1, row + 1];
+            result += heightMapArray[column - 1, row];
+            result += heightMapArray[column + 1, row];
+            result += heightMapArray[column, row + 1];
+            result += heightMapArray[column, row - 1];
+
+            return (result / 8); 
         }
     }
 };
