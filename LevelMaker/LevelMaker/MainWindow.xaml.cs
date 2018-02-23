@@ -18,19 +18,15 @@ using System.Windows.Threading;
 
 namespace LevelMaker
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-
     public partial class MainWindow : Window
     {
-        //30 / 100
         static int totalSize = 75;
-        static int minHeight = 475;
+        static int minHeight = 500;
         static int minWidth = 150;
-        static int primStart = 35; 
-        int gridHeight = 50;
-        int gridWidth = 50;
+        static int primStartX;
+        static int primStartY; 
+        int gridHeight = 75;
+        int gridWidth = 75;
         bool leftButtonDown = false;
         bool rightButtonDown = false;
         int tileSize = 10;
@@ -39,9 +35,15 @@ namespace LevelMaker
         float[,] heightMapArray = new float[totalSize, totalSize];
         List<Rectangle> wallList = new List<Rectangle>();
         SolidColorBrush wallColour = Brushes.Black;
-        SolidColorBrush corridorColour = Brushes.White; 
+        SolidColorBrush corridorColour = Brushes.White;
+        SolidColorBrush Lava = Brushes.OrangeRed;
+        SolidColorBrush Tresure = Brushes.Yellow;
+        SolidColorBrush Doors = Brushes.Brown;
+        SolidColorBrush FillColour = Brushes.Blue;
         public MainWindow()
         {
+            primStartX = gridWidth / 2;
+            primStartY = gridHeight / 2;
             InitializeComponent();
             //form button
             canvas.MouseLeftButtonDown += Window_MouseLeftButtonDown;
@@ -90,6 +92,8 @@ namespace LevelMaker
                 this.Width = minWidth;
                 this.Height = minHeight;
             }
+            primStartX = gridWidth / 2;
+            primStartY = gridHeight / 2;
         }
 
         private void GenerateGrid()
@@ -104,7 +108,7 @@ namespace LevelMaker
                         Height = tileSize,
                         Fill = Brushes.LightGray,
                         Stroke = Brushes.Gray,
-                        StrokeThickness = 1,
+                        StrokeThickness = 0,
                     };
                     tileArray[column, row].MouseEnter += rect_MouseButtonHeldDown;
                     tileArray[column, row].MouseLeftButtonDown += rect_MouseLeftButtonDown;
@@ -114,85 +118,10 @@ namespace LevelMaker
                     Canvas.SetTop(tileArray[column, row], tileSize * row);
                     //if (row == totalSize - 1 || column == totalSize - 1 || column == 0 || row == 0)
                     //{
-                    //    tileArray[row, column].Fill = Brushes.Purple;
+                    //    tileArray[column, row].Fill = Brushes.Purple;
                     //}
                 }
             }
-        }
-
-        private void rect_MouseButtonHeldDown(object sender, MouseEventArgs e)
-        {
-            if (System.Windows.Input.Mouse.LeftButton == MouseButtonState.Released)
-                leftButtonDown = false;
-            if (System.Windows.Input.Mouse.RightButton == MouseButtonState.Released)
-                rightButtonDown = false;
-
-            if (leftButtonDown)
-                rect_MouseLeftButtonDown(sender, e);
-            else if (rightButtonDown)
-                ((Rectangle)sender).Fill = Brushes.LightGray;
-        }
-
-        private void rect_MouseRightButtonDown(object sender, MouseEventArgs e)
-        {
-            ((Rectangle)sender).Fill = Brushes.LightGray;
-        }
-
-        private void rect_MouseLeftButtonDown(object sender, MouseEventArgs e)
-        {
-            switch (TileType.SelectionBoxItem.ToString())
-            {
-                case "Grass":
-                    ((Rectangle)sender).Fill = Brushes.Green;
-                    break;
-                case "Wall":
-                    ((Rectangle)sender).Fill = Brushes.Purple;
-                    break;
-                case "Lava":
-                    ((Rectangle)sender).Fill = Brushes.Red;
-                    break;
-                case "Door Right":
-                    ((Rectangle)sender).Fill = Brushes.Brown;
-                    break;
-                case "Door Left":
-                    ((Rectangle)sender).Fill = Brushes.RosyBrown;
-                    break;
-                case "Door Up":
-                    ((Rectangle)sender).Fill = Brushes.SaddleBrown;
-                    break;
-                case "Rock":
-                    ((Rectangle)sender).Fill = Brushes.DarkGray;
-                    break;
-                case "Water":
-                    ((Rectangle)sender).Fill = Brushes.Blue;
-                    break;
-                case "Sand":
-                    ((Rectangle)sender).Fill = Brushes.Yellow;
-                    break;
-                case "Rope":
-                    ((Rectangle)sender).Fill = Brushes.Black;
-                    break;
-                case "Stairs up from Left":
-                    ((Rectangle)sender).Fill = Brushes.Aqua;
-                    break;
-                case "Stairs up from Right":
-                    ((Rectangle)sender).Fill = Brushes.Aquamarine;
-                    break;
-                case "Conveyor Left":
-                    ((Rectangle)sender).Fill = Brushes.DarkBlue;
-                    break;
-                case "Conveyor Right":
-                    ((Rectangle)sender).Fill = Brushes.DarkCyan;
-                    break;
-                case "Empty":
-                    ((Rectangle)sender).Fill = Brushes.LightGray;
-                    break;
-            }
-        }
-
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
-            PrintToTxt(ConvertToTxt());
         }
 
         private void PrintToTxt(char[] array)
@@ -221,117 +150,34 @@ namespace LevelMaker
                     sw.Write(item);
                     i++;
                 }
-                //sw.Write(Environment.NewLine);
-                //sw.Write(LevelName.Text.ToString());
-                //sw.Write(Environment.NewLine);
-                //sw.Write(LevelType.SelectionBoxItem.ToString());
-                //sw.Write(Environment.NewLine);
-                //sw.Write(comboRoomUp.SelectionBoxItem.ToString());
-                //sw.Write(Environment.NewLine);
-                //sw.Write(comboRoomDown.SelectionBoxItem.ToString());
-                //sw.Write(Environment.NewLine);
-                //sw.Write(comboRoomLeft.SelectionBoxItem.ToString());
-                //sw.Write(Environment.NewLine);
-                //sw.Write(comboRoomRight.SelectionBoxItem.ToString());
             }
             MessageBox.Show("File Saved Successfully");
         }
 
         private char[] ConvertToTxt()
         {
-            bool Ladder = false;
             char[] array = new char[gridHeight * (gridWidth)];
             for (int row = 0; row < gridHeight; row++)
             {
                 for (int column = 0; column < gridWidth; column++)
                 {
-                    if (tileArray[row, column].Fill == Brushes.LightGray)
-                    {
-                        //Empty Space
+                    if (tileArray[column, row].Fill == wallColour)
                         array[column + (row * gridWidth)] = '0';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.Green)
-                    {
-                        //Platform
+
+                    else if (tileArray[column, row].Fill == corridorColour || tileArray[column, row].Fill == Brushes.Blue)
                         array[column + (row * gridWidth)] = '1';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.Purple)
-                    {
-                        //Wall
-                        array[column + (row * gridWidth)] = '8';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.Yellow)
-                    {
-                        //Ladder
-                        if (Ladder == false)
-                        {
-                            array[column + (row * gridWidth)] = '4';
-                            Ladder = true;
-                        }
-                        else
-                        {
-                            array[column + (row * gridWidth)] = '6';
-                            Ladder = false;
-                        }
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.Red)
-                    {
-                        //Enemy Path
-                        array[column + (row * gridWidth)] = '3';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.Brown)
-                    {
-                        //Door Right
-                        array[column + (row * gridWidth)] = 'R';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.RosyBrown)
-                    {
-                        //Door Left
+
+                    else if (tileArray[column, row].Fill == Lava)
                         array[column + (row * gridWidth)] = 'L';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.SaddleBrown)
-                    {
-                        //Door Up
-                        array[column + (row * gridWidth)] = 'U';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.SandyBrown)
-                    {
-                        //Door Down
+
+                    else if (tileArray[column, row].Fill == Doors)
                         array[column + (row * gridWidth)] = 'D';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.Blue)
-                    {
-                        //Collectable
-                        array[column + (row * gridWidth)] = '2';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.Black)
-                    {
-                        //Rope
-                        array[column + (row * gridWidth)] = 'I';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.Aqua)
-                    {
-                        //Stairs up from left
-                        array[column + (row * gridWidth)] = '<';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.Aquamarine)
-                    {
-                        //Stairs up from right
-                        array[column + (row * gridWidth)] = '>';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.DarkBlue)
-                    {
-                        //Conveyor Left
-                        array[column + (row * gridWidth)] = 'C';
-                    }
-                    else if (tileArray[row, column].Fill == Brushes.DarkCyan)
-                    {
-                        //Conveyor Right
-                        array[column + (row * gridWidth)] = 'K';
-                    }
+
+                    else if (tileArray[column, row].Fill == Tresure)
+                        array[column + (row * gridWidth)] = 'T';
+
                 }
             }
-
             return array;
         }
 
@@ -359,15 +205,15 @@ namespace LevelMaker
                 MessageBox.Show("Invalid File");
                 return;
             }
-            //Remove current level
-            for (int row = 0; row < gridHeight; row++)
-            {
-                for (int column = 0; column < gridWidth; column++)
-                {
-                    canvas.Children.Remove(tileArray[row, column]);
-                }
-            }
 
+            //Get height and width of file 
+            string[] checkSize = File.ReadAllLines(filename);
+            gridWidth = checkSize[0].Length;
+            gridHeight = checkSize.Length;
+            XValue.Text = gridWidth.ToString();
+            YValue.Text = gridHeight.ToString(); 
+            
+            ResizeGrid();
             string readText = File.ReadAllText(filename);
             char[] charArray = readText.ToCharArray();
 
@@ -376,173 +222,34 @@ namespace LevelMaker
             {
                 for (int column = 0; column < gridWidth; column++)
                 {
-                    tileArray[row, column] = new Rectangle()
-                    {
-                        Width = tileSize,
-                        Height = tileSize,
-                        Fill = Brushes.LightGray,
-                        Stroke = Brushes.Gray,
-                        StrokeThickness = 1,
-                    };
-
                     switch (charArray[i])
                     {
+                        case '0':
+                            tileArray[column, row].Fill = wallColour;
+                            break;
                         case '1':
-                            tileArray[row, column].Fill = Brushes.Green;
-                            break;
-                        case '2':
-                            tileArray[row, column].Fill = Brushes.Blue;
-                            break;
-                        case '3':
-                            tileArray[row, column].Fill = Brushes.Red;
-                            break;
-                        case '4':
-                            tileArray[row, column].Fill = Brushes.Yellow;
-                            break;
-                        case '6':
-                            tileArray[row, column].Fill = Brushes.Yellow;
-                            break;
-                        case '8':
-                            tileArray[row, column].Fill = Brushes.Purple;
-                            break;
-                        case 'R':
-                            tileArray[row, column].Fill = Brushes.Brown;
+                            tileArray[column, row].Fill = corridorColour;
                             break;
                         case 'L':
-                            tileArray[row, column].Fill = Brushes.RosyBrown;
-                            break;
-                        case 'U':
-                            tileArray[row, column].Fill = Brushes.SaddleBrown;
+                            tileArray[column, row].Fill = Lava;
                             break;
                         case 'D':
-                            tileArray[row, column].Fill = Brushes.SandyBrown;
+                            tileArray[column, row].Fill = Doors;
                             break;
-                        case 'I':
-                            tileArray[row, column].Fill = Brushes.Black;
-                            break;
-                        case '<':
-                            tileArray[row, column].Fill = Brushes.Aqua;
-                            break;
-                        case '>':
-                            tileArray[row, column].Fill = Brushes.Aquamarine;
-                            break;
-                        case 'K':
-                            tileArray[row, column].Fill = Brushes.DarkCyan;
-                            break;
-                        case 'C':
-                            tileArray[row, column].Fill = Brushes.DarkBlue;
+                        case 'T':
+                            tileArray[column, row].Fill = Tresure;
                             break;
                         case '\r':
                             i += 2;
                             break;
                     }
                     i++;
-                    tileArray[row, column].MouseEnter += rect_MouseButtonHeldDown;
-                    tileArray[row, column].MouseLeftButtonDown += rect_MouseLeftButtonDown;
-                    tileArray[row, column].MouseRightButtonDown += rect_MouseRightButtonDown;
-                    canvas.Children.Add(tileArray[row, column]);
-                    Canvas.SetLeft(tileArray[row, column], tileSize * column);
-                    Canvas.SetTop(tileArray[row, column], tileSize * row);
-                    //if (row == gridHeight - 1 || column == gridWidth - 1 || column == 0 || row == 0)
-                    //{
-                    //    tileArray[row, column].Fill = Brushes.Purple;
-                    //}
+                    if (row == gridHeight - 1 || column == gridWidth - 1 || column == 0 || row == 0)
+                    {
+                        tileArray[column, row].Fill = Brushes.Black;
+                    }
                 }
             }
-            //string[] lines = System.IO.File.ReadAllLines(filename);
-            ////Delete all but the extra elements
-            //for (int x = 0; x < gridHeight; x++)
-            //{
-            //    lines = lines.Skip(x).ToArray();
-            //}
-            //LevelName.Text = lines[0];
-            //foreach (ComboBoxItem item in LevelType.Items)
-            //    if (item.Content.ToString() == lines[1])
-            //    {
-            //        LevelType.SelectedValue = item;
-            //        break;
-            //    }
-            //foreach (ComboBoxItem item in comboRoomUp.Items)
-            //    if (item.Content.ToString() == lines[2])
-            //    {
-            //        comboRoomUp.SelectedValue = item;
-            //        break;
-            //    }
-            //foreach (ComboBoxItem item in comboRoomDown.Items)
-            //    if (item.Content.ToString() == lines[3])
-            //    {
-            //        comboRoomDown.SelectedValue = item;
-            //        break;
-            //    }
-            //foreach (ComboBoxItem item in comboRoomLeft.Items)
-            //    if (item.Content.ToString() == lines[4])
-            //    {
-            //        comboRoomLeft.SelectedValue = item;
-            //        break;
-            //    }
-            //foreach (ComboBoxItem item in comboRoomRight.Items)
-            //    if (item.Content.ToString() == lines[5])
-            //    {
-            //        comboRoomRight.SelectedValue = item;
-            //        break;
-            //    }
-        }
-
-
-        private void Load_Click(object sender, RoutedEventArgs e)
-        {
-            LoadPreviousLevel();
-        }
-
-        private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            rightButtonDown = true;
-        }
-
-        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            leftButtonDown = true;
-        }
-
-        private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            rightButtonDown = false;
-        }
-
-        private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            leftButtonDown = false;
-        }
-
-        private void SliderX_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            XValue.Text = e.NewValue.ToString();
-            gridWidth = (int)e.NewValue;
-            ResizeGrid();
-        }
-
-        private void SliderY_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            YValue.Text = e.NewValue.ToString();
-            gridHeight = (int)e.NewValue;
-            ResizeGrid();
-        }
-
-        private void XValue_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (XValue.Text != "")
-                SliderX.Value = Convert.ToDouble(XValue.Text);
-        }
-
-        private void YValue_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (YValue.Text != "")
-                SliderY.Value = Convert.ToDouble(YValue.Text);
-        }
-
-        private void PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = !IsTextAllowed(e.Text);
         }
 
         private static bool IsTextAllowed(string text)
@@ -551,14 +258,12 @@ namespace LevelMaker
             return !regex.IsMatch(text);
         }
 
-        private void Generate_Click(object sender, RoutedEventArgs e)
-        {
-            ClearHeightMap(); 
-            Random rnd = new Random();
-            int x = rnd.Next(4, 5); 
-            for (int i = 0; i < x; i++)
-                ProcedurallyGenerate(); 
-        }
+        //Generate code
+        //ClearHeightMap();
+        //Random rnd = new Random();
+        //int x = rnd.Next(4, 5); 
+        //    for (int i = 0; i<x; i++)
+        //        ProcedurallyGenerate();
 
         private void ClearHeightMap()
         {
@@ -630,22 +335,12 @@ namespace LevelMaker
             return (result / 8); 
         }
 
-        public static void ProcessUITasks()
-        {
-            DispatcherFrame frame = new DispatcherFrame();
-            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(delegate (object parameter) {
-                frame.Continue = false;
-                return null;
-            }), null);
-            Dispatcher.PushFrame(frame);
-        }
-
-        private void PrimsButton_Click(object sender, RoutedEventArgs e)
+        private void Prims()
         {
             AllWalls();
-            tileArray[primStart, primStart].Fill = corridorColour;
-            GetWalls(primStart, primStart);
-            Random rand = new Random(); 
+            tileArray[primStartX, primStartY].Fill = corridorColour;
+            GetWalls(primStartX, primStartY);
+            Random rand = new Random();
             while (wallList.Count != 0)
             {
                 int rndm = rand.Next(0, wallList.Count);
@@ -659,53 +354,42 @@ namespace LevelMaker
                     {
                         if (tileArray[column, row] == currentWall)
                         {
-                            if (column != gridWidth-1 && column != 0)
-                            {
-                                if (tileArray[column - 1, row].Fill == wallColour && tileArray[column + 1, row].Fill == corridorColour)
+                            if (row != 0 && row != gridHeight - 1 && column != gridWidth - 1 && column != 0)
+                                if (numWalls(column, row) >= 6)
                                 {
-                                    if (tileArray[column, row + 1].Fill == wallColour && tileArray[column, row - 1].Fill == wallColour)
-                                    {
-                                        tileArray[column, row].Fill = corridorColour;
-                                        GetWalls(column - 1, row);
-                                        break;
-                                    }
+                                    tileArray[column, row].Fill = corridorColour;
+                                    GetWalls(column, row);
+                                    break;
                                 }
-                                if (tileArray[column + 1, row].Fill == wallColour && tileArray[column - 1, row].Fill == corridorColour)
-                                {
-                                    if (tileArray[column, row + 1].Fill == wallColour && tileArray[column, row - 1].Fill == wallColour)
-                                    {
-                                        tileArray[column, row].Fill = corridorColour;
-                                        GetWalls(column + 1, row);
-                                        break;
-                                    }
-                                }
-                            }
-                            if (row != 0 && row != gridHeight-1)
-                            {
-                                if (tileArray[column, row - 1].Fill == wallColour && tileArray[column, row + 1].Fill == corridorColour)
-                                {
-                                    if (tileArray[column + 1, row].Fill == wallColour && tileArray[column - 1, row].Fill == wallColour)
-                                    {
-                                        tileArray[column, row].Fill = corridorColour;
-                                        GetWalls(column, row - 1);
-                                        break;
-                                    }
-                                }
-                                if (tileArray[column, row + 1].Fill == wallColour && tileArray[column, row - 1].Fill == corridorColour)
-                                {
-                                    if (tileArray[column + 1, row].Fill == wallColour && tileArray[column - 1, row].Fill == wallColour)
-                                    {
-                                        tileArray[column, row].Fill = corridorColour;
-                                        GetWalls(column, row + 1);
-                                        break;
-                                    }
-                                }
-                            }
-                            currentWall.Fill = Brushes.Black;
+                            currentWall.Fill = wallColour;
                         }
                     }
                 }
             }
+        }
+
+        private int numWalls(int column, int row)
+        {
+            int num = 0;
+            for (int dRow = -1; dRow <= 1; ++dRow)
+                for (int dCol = -1; dCol <= 1; ++dCol)
+                    if (dRow != 0 || dCol != 0)
+                        if (row + dRow < gridHeight && row + dRow > -1 && column + dCol < gridWidth && column + dCol > -1)
+                            if (tileArray[column + dCol, row + dRow].Fill == wallColour)
+                                num++;
+            return num; 
+        }
+
+        private int numConnections(int column, int row)
+        {
+            int num = 0;
+            for (int dRow = -1; dRow <= 1; ++dRow)
+                for (int dCol = -1; dCol <= 1; ++dCol)
+                    if (dRow == 0 ^ dCol == 0)
+                        if (row + dRow < gridHeight && row + dRow > -1 && column + dCol < gridWidth && column + dCol > -1)
+                            if (tileArray[column + dCol, row + dRow].Fill != wallColour)
+                                num++;
+            return num;
         }
 
         private void GetWalls(int column, int row)
@@ -726,14 +410,24 @@ namespace LevelMaker
                 for (int column = 0; column < gridWidth; column++)
                 {
                     tileArray[column, row].Fill = wallColour;
-                    tileArray[column, row].StrokeThickness = 0; 
                 }
             }
         }
 
-        private void FloodFill_Click(object sender, RoutedEventArgs e)
+        private void FloodFiller()
         {
-            Flood(primStart, primStart, Brushes.White, Brushes.Blue); 
+            tileArray[primStartX, primStartY].Fill = corridorColour; 
+            for (int row = 0; row < gridHeight; row++)
+            {
+                for (int column = 0; column < gridWidth; column++)
+                {
+                    if (row == gridHeight - 1 || column == gridWidth - 1 || column == 0 || row == 0)
+                    {
+                        tileArray[column, row].Fill = wallColour;
+                    }
+                }
+            }
+            Flood(primStartX, primStartY, corridorColour, FillColour);
         }
 
         private void Flood(int col, int row, SolidColorBrush targetColour, SolidColorBrush replaceColour)
@@ -751,6 +445,218 @@ namespace LevelMaker
             Flood(col, row - 1, targetColour, replaceColour);
 
             return; 
+        }
+
+        private void Detail()
+        {
+            //PreProcessing
+            for (int row = 0; row < gridHeight; row++)
+            {
+                for (int column = 0; column < gridWidth; column++)
+                {
+                    //Tresure 
+                    if (tileArray[column, row].Fill == corridorColour && numWalls(column, row) == 7)
+                        tileArray[column, row].Fill = Tresure;
+                    //Lava 
+                    if (tileArray[column, row].Fill == wallColour && numWalls(column, row) > 6
+                        && column > 2 && column < gridWidth - 3 && row > 2 && row < gridHeight - 3)
+                        tileArray[column, row].Fill = Brushes.Red;
+                    //Doors 
+                    if (tileArray[column, row].Fill == corridorColour && numWalls(column, row) == 2)
+                        tileArray[column, row].Fill = Doors;
+
+                }
+            }
+            //PostProcessing
+            for (int row = 0; row < gridHeight; row++)
+            {
+                for (int column = 0; column < gridWidth; column++)
+                {
+                    if (tileArray[column, row].Fill == Brushes.Red)
+                        for (int dRow = -1; dRow <= 1; ++dRow)
+                            for (int dCol = -1; dCol <= 1; ++dCol)
+                                if (tileArray[column + dCol, row + dRow].Fill == wallColour || tileArray[column + dCol, row + dRow].Fill == Brushes.Red)
+                                    tileArray[column + dCol, row + dRow].Fill = Lava;
+                }
+            }
+        }
+
+        private void Rooms()
+        {
+            FloodFiller();
+            for (int row = 0; row < gridHeight; row++)
+            {
+                for (int column = 0; column < gridWidth; column++)
+                {
+                    if ((tileArray[column, row].Fill == wallColour || tileArray[column, row].Fill == Doors)
+                        && row != gridHeight - 1 && column != gridWidth - 1 && column != 0 && row != 0)
+                    {
+                        bool del = true;
+                        for (int dRow = -1; dRow <= 1; ++dRow)
+                            for (int dCol = -1; dCol <= 1; ++dCol)
+                                if (tileArray[column + dCol, row + dRow].Fill == FillColour
+                                    && row + dRow != gridHeight - 1 && column + dCol != gridWidth - 1 && column + dCol != 0 && row + dRow != 0)
+                                    del = false;
+
+                        if (del)
+                            tileArray[column, row].Fill = corridorColour;
+                    }
+                }
+            }
+        }
+
+        //Buttons & other UI tasks
+
+        public static void ProcessUITasks()
+        {
+            DispatcherFrame frame = new DispatcherFrame();
+            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(delegate (object parameter) {
+                frame.Continue = false;
+                return null;
+            }), null);
+            Dispatcher.PushFrame(frame);
+        }
+
+        private void MakeRooms_Click(object sender, RoutedEventArgs e)
+        {
+            Rooms();
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            for (int row = 0; row < totalSize; row++)
+            {
+                for (int column = 0; column < totalSize; column++)
+                {
+                    if (CheckLines.IsChecked == true)
+                        tileArray[column, row].StrokeThickness = 1;
+                    else
+                        tileArray[column, row].StrokeThickness = 0;
+                }
+            }
+        }
+
+        private void AddDetail_Click(object sender, RoutedEventArgs e)
+        {
+            Detail();
+        }
+
+        private void FloodFill_Click(object sender, RoutedEventArgs e)
+        {
+            FloodFiller();
+        }
+
+        private void PrimsButton_Click(object sender, RoutedEventArgs e)
+        {
+            Prims();
+        }
+
+        private void Generate_Click(object sender, RoutedEventArgs e)
+        {
+            Prims();
+            Detail();
+            Rooms();
+        }
+
+        private void Load_Click(object sender, RoutedEventArgs e)
+        {
+            LoadPreviousLevel();
+        }
+
+        private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            rightButtonDown = true;
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            leftButtonDown = true;
+        }
+
+        private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            rightButtonDown = false;
+        }
+
+        private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            leftButtonDown = false;
+        }
+
+        private void SliderX_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            XValue.Text = e.NewValue.ToString();
+            gridWidth = (int)e.NewValue;
+            ResizeGrid();
+        }
+
+        private void SliderY_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            YValue.Text = e.NewValue.ToString();
+            gridHeight = (int)e.NewValue;
+            ResizeGrid();
+        }
+
+        private void XValue_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (XValue.Text != "")
+                SliderX.Value = Convert.ToDouble(XValue.Text);
+        }
+
+        private void YValue_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (YValue.Text != "")
+                SliderY.Value = Convert.ToDouble(YValue.Text);
+        }
+
+        private void PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+
+        private void rect_MouseButtonHeldDown(object sender, MouseEventArgs e)
+        {
+            if (System.Windows.Input.Mouse.LeftButton == MouseButtonState.Released)
+                leftButtonDown = false;
+            if (System.Windows.Input.Mouse.RightButton == MouseButtonState.Released)
+                rightButtonDown = false;
+
+            if (leftButtonDown)
+                rect_MouseLeftButtonDown(sender, e);
+            else if (rightButtonDown)
+                ((Rectangle)sender).Fill = Brushes.LightGray;
+        }
+
+        private void rect_MouseRightButtonDown(object sender, MouseEventArgs e)
+        {
+            ((Rectangle)sender).Fill = Brushes.LightGray;
+        }
+
+        private void rect_MouseLeftButtonDown(object sender, MouseEventArgs e)
+        {
+            switch (TileType.SelectionBoxItem.ToString())
+            {
+                case "Treasure":
+                    ((Rectangle)sender).Fill = Tresure;
+                    break;
+                case "Wall":
+                    ((Rectangle)sender).Fill = wallColour;
+                    break;
+                case "Lava":
+                    ((Rectangle)sender).Fill = Lava;
+                    break;
+                case "Door":
+                    ((Rectangle)sender).Fill = Doors;
+                    break;
+                case "Empty":
+                    ((Rectangle)sender).Fill = corridorColour;
+                    break;
+            }
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            PrintToTxt(ConvertToTxt());
         }
     }
 };
