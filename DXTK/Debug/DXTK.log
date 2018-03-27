@@ -1,0 +1,4 @@
+﻿  SpriteFactory.cpp
+c:\users\charles\desktop\dxtk\dxtk\spritefactory.cpp(39): warning C4700: uninitialized local variable 'm_sprite' used
+     Creating library C:\Users\Charles\Desktop\DXTK\Debug\DXTK.lib and object C:\Users\Charles\Desktop\DXTK\Debug\DXTK.exp
+  DXTK.vcxproj -> C:\Users\Charles\Desktop\DXTK\Debug\DXTK.exe

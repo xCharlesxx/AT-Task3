@@ -1,0 +1,4 @@
+﻿  Sprite.cpp
+a:\github\at-task3\dxtk\sprite.cpp(85): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+     Creating library A:\GitHub\AT-Task3\x64\Debug\DXTK.lib and object A:\GitHub\AT-Task3\x64\Debug\DXTK.exp
+  DXTK.vcxproj -> A:\GitHub\AT-Task3\x64\Debug\DXTK.exe
