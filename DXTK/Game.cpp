@@ -69,6 +69,12 @@ void Game::Update(DX::StepTimer const& timer)
 	
 	if (kb.Escape)
 		PostQuitMessage(0);
+	if (kb.S)
+		MessageBox(
+			NULL,
+			(LPCWSTR)m_level->ScoreAsWstring(m_level->totalScore - m_level->score).c_str(),
+			(LPCWSTR)L"Score",
+			MB_ICONWARNING | MB_DEFBUTTON2);
 
 	if (kb.Left && !LeftKeyDown)
 	{
@@ -143,10 +149,11 @@ void Game::Update(DX::StepTimer const& timer)
 	{
 		MessageBox(
 			NULL,
-			(LPCWSTR)L"Congratulations! You Win!",
+			(LPCWSTR)L"You found all the coins in this Level! Let's search the next one!",
 			(LPCWSTR)L"Coin Collecter",
 			MB_ICONWARNING | MB_DEFBUTTON2);
-		PostQuitMessage(0);
+		m_level->levelNum++; 
+		m_currentLevel = m_level->GetLevel(m_spriteFactory);
 	}
 }
 
@@ -426,11 +433,11 @@ void Game::OnDeviceLost()
 
 void Game::OuchWall()
 {
-	MessageBox(
+	/*MessageBox(
 		NULL,
 		(LPCWSTR)L"The Wall is Pretty Solid",
 		(LPCWSTR)L"Coin Collecter",
-		MB_ICONWARNING | MB_DEFBUTTON2);
+		MB_ICONWARNING | MB_DEFBUTTON2);*/
 }
 
 void Game::OuchFire()

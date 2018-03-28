@@ -5,6 +5,7 @@
 
 Level::Level()
 {
+	//std::getline("..\\LevelMaker\\LevelMaker\\GameName", gameName);
 }
 
 
@@ -14,7 +15,7 @@ Level::~Level()
 
 vector<char> Level::GetLevel(SpriteFactory* SF)
 {
-	string m_fileLocation = "..\\LevelMaker\\LevelMaker\\Levels\\New Game\\1";;
+	string m_fileLocation = "..\\LevelMaker\\LevelMaker\\Levels\\" + gameName + "\\" + to_string(levelNum);
 	GetArrayFromFile item; 
 	vector<char> level; 
 	level = item.GetVector(m_fileLocation); 
@@ -26,6 +27,12 @@ vector<char> Level::GetLevel(SpriteFactory* SF)
 	for (int i = 0; i < level.size(); i++)
 		if (level[i] == 'T')
 			totalScore++; 
+
+	MessageBox(
+		NULL,
+		(LPCWSTR)L"Chester the Treasure Chest has lost his Treasure, Help Him Find it!\nPress 'S' to See How Many Are Left!",
+		(LPCWSTR)L"Chester's Fable",
+		MB_ICONWARNING | MB_DEFBUTTON2);
 
 	return level; 
 }
@@ -46,11 +53,11 @@ void Level::PrintLevel(vector<char>& level)
 		level[m_playerPos] = '1';
 		score++; 
 		
-		MessageBox(
+		/*MessageBox(
 			NULL,
 			(LPCWSTR)ScoreAsWstring(totalScore - score).c_str(),
 			(LPCWSTR)L"Score",
-			MB_ICONWARNING | MB_DEFBUTTON2);
+			MB_ICONWARNING | MB_DEFBUTTON2);*/
 	}
 	int playerXPos = GetX(m_playerPos); 
 	int playerYPos = GetY(m_playerPos);

@@ -41,3 +41,17 @@ A:\GitHub\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker.exe
 A:\GitHub\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker.pdb
 A:\GitHub\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker.csprojResolveAssemblyReference.cache
 A:\GitHub\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker.csproj.CoreCompileInputs.cache
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker.csprojResolveAssemblyReference.cache
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\MainWindow.g.cs
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\App.g.cs
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker_MarkupCompile.cache
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker_MarkupCompile.lref
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker.exe
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker.pdb
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\bin\Debug\LevelMaker.exe.config
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\bin\Debug\LevelMaker.exe
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\bin\Debug\LevelMaker.pdb
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\MainWindow.baml
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker.g.resources
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker.Properties.Resources.resources
+D:\Charlie\AT-Task3\LevelMaker\LevelMaker\obj\Debug\LevelMaker.csproj.GenerateResource.Cache
