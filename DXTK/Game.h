@@ -45,7 +45,9 @@ private:
     void CreateResources();
 
     void OnDeviceLost();
-
+	//Messages 
+	void OuchWall(); 
+	void OuchFire(); 
     // Device resources.
     HWND                                            m_window;
     int                                             m_outputWidth;
@@ -68,10 +70,13 @@ private:
 
 	// My Variables 
 	vector<char>                                    m_currentLevel;
-	int                                             m_playerPos;
 	SpriteFactory*                                  m_spriteFactory; 
 	Level*                                          m_level;
 	std::unique_ptr<DirectX::Keyboard>              m_keyboard;
 	std::unique_ptr<DirectX::Mouse>                 m_mouse;
 	float                                           tock = 0; 
+	bool                                            UpKeyDown = false; 
+	bool                                            DownKeyDown = false;
+	bool                                            LeftKeyDown = false;
+	bool                                            RightKeyDown = false;
 };

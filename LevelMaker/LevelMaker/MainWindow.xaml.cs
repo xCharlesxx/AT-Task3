@@ -24,7 +24,7 @@ namespace LevelMaker
         static int minHeight = 500;
         static int minWidth = 150;
         static int primStartX;
-        static int primStartY; 
+        static int primStartY;
         int gridHeight = 75;
         int gridWidth = 75;
         bool leftButtonDown = false;
@@ -211,8 +211,8 @@ namespace LevelMaker
             gridWidth = checkSize[0].Length;
             gridHeight = checkSize.Length;
             XValue.Text = gridWidth.ToString();
-            YValue.Text = gridHeight.ToString(); 
-            
+            YValue.Text = gridHeight.ToString();
+
             ResizeGrid();
             string readText = File.ReadAllText(filename);
             char[] charArray = readText.ToCharArray();
@@ -279,7 +279,7 @@ namespace LevelMaker
             {
                 for (int column = 0; column < totalSize; column++)
                 {
-                    heightMapArray[column, row] = 0; 
+                    heightMapArray[column, row] = 0;
                 }
             }
         }
@@ -291,7 +291,7 @@ namespace LevelMaker
             {
                 for (int column = 0; column < gridWidth; column++)
                 {
-                    if (column != 0 && row != 0 && column != totalSize - 1 && row != totalSize - 1) 
+                    if (column != 0 && row != 0 && column != totalSize - 1 && row != totalSize - 1)
                     {
                         heightMapArray[column, row] += AverageSurroundingHeight(column, row);
                     }
@@ -312,7 +312,7 @@ namespace LevelMaker
             switch (heightMapArray[column, row])
             {
                 case float n when (n <= 10):
-                    tileArray[column, row].Fill = Brushes.Blue; 
+                    tileArray[column, row].Fill = Brushes.Blue;
                     break;
                 case float n when (n <= 25 && n > 10):
                     tileArray[column, row].Fill = Brushes.Yellow;
@@ -331,6 +331,7 @@ namespace LevelMaker
                     break;
             }
         }
+    
 
         private float AverageSurroundingHeight(int column, int row)
         {

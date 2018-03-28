@@ -63,41 +63,90 @@ void Game::Tick()
 void Game::Update(DX::StepTimer const& timer)
 {
     float elapsedTime = float(timer.GetElapsedSeconds());
+	auto kb = m_keyboard->GetState();
+	auto mouse = m_mouse->GetState();
 	tock += elapsedTime; 
-    // TODO: Add your game logic here.
-    if (tock > 0.1f)
+	
+	if (kb.Escape)
+		PostQuitMessage(0);
+
+	if (kb.Left && !LeftKeyDown)
 	{
-		auto kb = m_keyboard->GetState();
-		if (kb.Escape)
-			PostQuitMessage(0);
-		if (kb.Left)
-		{
+	    if (m_currentLevel[m_level->m_playerPos + 1] == '0')
+			OuchWall();
+		else if (m_currentLevel[m_level->m_playerPos + 1] == 'L')
+			OuchFire();
+		else 
 			m_level->MovePlayerLeft();
-			m_level->PrintLevel(m_currentLevel);
-		}
 
-		if (kb.Right)
-		{
+		m_level->PrintLevel(m_currentLevel);
+		LeftKeyDown = true; 
+	}
+
+	if (kb.Right && !RightKeyDown)
+	{
+		if (m_currentLevel[m_level->m_playerPos - 1] == '0')
+			OuchWall();
+		else if (m_currentLevel[m_level->m_playerPos - 1] == 'L')
+			OuchFire(); 
+		else 
 			m_level->MovePlayerRight();
-			m_level->PrintLevel(m_currentLevel);
-		}
 
-		if (kb.Up)
-		{
+		m_level->PrintLevel(m_currentLevel);
+		RightKeyDown = true;
+	}
+
+	if (kb.Up && !UpKeyDown)
+	{	
+		if (m_currentLevel[m_level->m_playerPos + m_level->m_levelWidth] == '0')
+			OuchWall();
+		else if (m_currentLevel[m_level->m_playerPos + m_level->m_levelWidth] == 'L')
+			OuchFire(); 
+		else 
 			m_level->MovePlayerUp();
-			m_level->PrintLevel(m_currentLevel);
-		}
 
-		if (kb.Down)
-		{
+		m_level->PrintLevel(m_currentLevel);
+		UpKeyDown = true;
+	}
+
+	if (kb.Down && !DownKeyDown)
+	{
+		if (m_currentLevel[m_level->m_playerPos - m_level->m_levelWidth] == '0')
+			OuchWall();
+		else if (m_currentLevel[m_level->m_playerPos - m_level->m_levelWidth] == 'L')
+			OuchFire(); 
+		else 
 			m_level->MovePlayerDown();
-			m_level->PrintLevel(m_currentLevel);
-		}
-		auto mouse = m_mouse->GetState();
+
+		m_level->PrintLevel(m_currentLevel);
+		DownKeyDown = true;
+	}
+
+	if (kb.IsKeyUp(DirectX::Keyboard::Left))
+		LeftKeyDown = false; 
+	if (kb.IsKeyUp(DirectX::Keyboard::Right))
+		RightKeyDown = false;
+	if (kb.IsKeyUp(DirectX::Keyboard::Up))
+		UpKeyDown = false;
+	if (kb.IsKeyUp(DirectX::Keyboard::Down))
+		DownKeyDown = false;
+
+	if (tock > 0.1f)
+	{
 		for (int i = 0; i < m_level->visibleSprites.size(); i++)
 			if (m_level->visibleSprites[i]->isAnimated)
-			m_level->visibleSprites[i]->UpdateTexture();
-		tock = 0; 
+				m_level->visibleSprites[i]->UpdateTexture();
+		tock = 0;
+	}
+
+	if (m_level->score == m_level->totalScore)
+	{
+		MessageBox(
+			NULL,
+			(LPCWSTR)L"Congratulations! You Win!",
+			(LPCWSTR)L"Coin Collecter",
+			MB_ICONWARNING | MB_DEFBUTTON2);
+		PostQuitMessage(0);
 	}
 }
 
@@ -115,6 +164,7 @@ void Game::Render()
 	//m_sprite->Render(m_spriteBatch.get(), SimpleMath::Vector2::Zero);
 	for (int i = 0; i < m_level->visibleSprites.size(); i++)
 		m_level->visibleSprites[i]->Draw(m_spriteBatch.get()); 
+
 	m_spriteBatch->End(); 
 
     // TODO: Add your rendering code here.
@@ -372,4 +422,22 @@ void Game::OnDeviceLost()
     CreateDevice();
 
     CreateResources();
+}
+
+void Game::OuchWall()
+{
+	MessageBox(
+		NULL,
+		(LPCWSTR)L"The Wall is Pretty Solid",
+		(LPCWSTR)L"Coin Collecter",
+		MB_ICONWARNING | MB_DEFBUTTON2);
+}
+
+void Game::OuchFire()
+{
+	MessageBox(
+		NULL,
+		(LPCWSTR)L"AHH Fire Hot!",
+		(LPCWSTR)L"Coin Collecter",
+		MB_ICONWARNING | MB_DEFBUTTON2);
 }

@@ -23,33 +23,48 @@ vector<char> Level::GetLevel(SpriteFactory* SF)
 	int startY = m_levelHeight / 2; 
 	m_playerPos = (startY * m_levelHeight) + startX;
 	PrintLevel(level);
+	for (int i = 0; i < level.size(); i++)
+		if (level[i] == 'T')
+			totalScore++; 
+
 	return level; 
 }
 
-void Level::PrintLevel(vector<char> level)
+void Level::PrintLevel(vector<char>& level)
 {
 	visibleSprites.clear(); 
-	vector<char> m_tempLevel = level;
 	vector<int> corridorsInView;
 	vector<int> wallsToDraw;
-	if (m_tempLevel[m_playerPos] == wall)
+	if (level[m_playerPos] == wall)
 		MessageBox(
 			NULL,
 			(LPCWSTR)L"Error Player Spawned in Wall",
 			(LPCWSTR)L"Printing Level",
 			MB_ICONWARNING | MB_DEFBUTTON2);
-	int playerXPos = m_playerPos % m_levelWidth;
-	int playerYPos = m_playerPos / m_levelWidth;
-	visibleSprites.push_back(m_SF->Create("0", 400, 300));
+	if (level[m_playerPos] == 'T')
+	{
+		level[m_playerPos] = '1';
+		score++; 
+		
+		MessageBox(
+			NULL,
+			(LPCWSTR)ScoreAsWstring(totalScore - score).c_str(),
+			(LPCWSTR)L"Score",
+			MB_ICONWARNING | MB_DEFBUTTON2);
+	}
+	int playerXPos = GetX(m_playerPos); 
+	int playerYPos = GetY(m_playerPos);
+	//Draw Player
+	visibleSprites.push_back(m_SF->Create("Player", 400, 300));
 	//Gets all corridors in view
-	Search(m_playerPos, m_playerPos, wall, 1,             m_tempLevel, corridorsInView);
-	Search(m_playerPos, m_playerPos, wall, -1,            m_tempLevel, corridorsInView);
-	Search(m_playerPos, m_playerPos, wall, m_levelWidth,  m_tempLevel, corridorsInView);
-	Search(m_playerPos, m_playerPos, wall, -m_levelWidth, m_tempLevel, corridorsInView);
+	Search(m_playerPos, m_playerPos, wall, 1,             level, corridorsInView);
+	Search(m_playerPos, m_playerPos, wall, -1,            level, corridorsInView);
+	Search(m_playerPos, m_playerPos, wall, m_levelWidth,  level, corridorsInView);
+	Search(m_playerPos, m_playerPos, wall, -m_levelWidth, level, corridorsInView);
 
 	//Gets all the walls surrounding the corridors in view
 	for (int i = 0; i < corridorsInView.size(); i++)
-		GetWalls(corridorsInView[i], m_tempLevel, wallsToDraw);
+		GetWalls(corridorsInView[i], level, wallsToDraw);
 
 	//Removes Duplicates 
 	sort(wallsToDraw.begin(), wallsToDraw.end());
@@ -60,17 +75,51 @@ void Level::PrintLevel(vector<char> level)
 	{
 		int relativeXPos = playerXPos - (wallsToDraw[i] % m_levelWidth); 
 		int relativeYPos = playerYPos - (wallsToDraw[i] / m_levelWidth);
-		string spriteTexture; 
-		switch (m_tempLevel[wallsToDraw[i]])
+		string spriteTexture = "X"; 
+		switch (level[wallsToDraw[i]])
 		{
-		case '0':
-			spriteTexture = "1";
-			break;
-		case 'T':
-			spriteTexture = "2";
-			break;
-		default:
-			break;
+			case '0':
+				//If Tile is Below or Right of player
+				if (m_playerPos < wallsToDraw[i])
+				{
+					if (NoWallUp(wallsToDraw[i], level) && NoWallLeft(wallsToDraw[i], level))
+						spriteTexture = "1";
+					else if (NoWallUp(wallsToDraw[i], level) && NoWallRight(wallsToDraw[i], level))
+						spriteTexture = "2"; 
+					else if (NoWallUp(wallsToDraw[i], level))
+						spriteTexture = "3";
+				}
+				//If tile is Above or Left of player
+				else
+				{
+					if (NoWallDown(wallsToDraw[i], level) && NoWallLeft(wallsToDraw[i], level))
+						spriteTexture = "6";
+					else if (NoWallDown(wallsToDraw[i], level) && NoWallRight(wallsToDraw[i], level))
+						spriteTexture = "7";
+					else if (NoWallDown(wallsToDraw[i], level))
+						spriteTexture = "8";
+				}
+				if (spriteTexture == "X")
+				{
+					int a, b, c; 
+					a = GetX(m_playerPos); 
+					b = (m_levelWidth * m_levelHeight) - (m_levelWidth - GetX(m_playerPos));
+					c = wallsToDraw[i]; 
+					//Check if left of player 
+					if (((GetX(b) - GetX(a))*(GetY(c) - GetY(a)) - (GetY(b) - GetY(a))*(GetX(c) - GetX(a))) > 0)
+						spriteTexture = "5";
+					else 
+						spriteTexture = "4"; 
+				}
+				break;
+			case 'T':
+				spriteTexture = "Coin";
+				break;
+			case 'L':
+				spriteTexture = "Lava";
+				break;
+			default:
+				break;
 		}
 		visibleSprites.push_back(m_SF->Create(spriteTexture, 400 + relativeXPos * 60, 300 + relativeYPos * 60));
 	}
@@ -80,23 +129,73 @@ void Level::PrintLevel(vector<char> level)
 	//visibleSprites.push_back(m_sprite); 
 }
 
-void Level::Search(int startPos, int pos, char wall, int direction, vector<char> m_tempLevel, vector<int> &corridorsInView)
+void Level::Search(int startPos, int pos, char wall, int direction, vector<char> level, vector<int> &corridorsInView)
 {
-	if (m_tempLevel[pos] == wall)
+	if (level[pos] == wall)
 		return; 
 
 	corridorsInView.push_back(pos); 
 
-	Search(startPos, pos + direction, wall, direction, m_tempLevel, corridorsInView);
+	Search(startPos, pos + direction, wall, direction, level, corridorsInView);
 }
 
-void Level::GetWalls(int pos, vector<char> m_tempLevel, vector<int> &wallsToDraw)
+void Level::GetWalls(int pos, vector<char> level, vector<int> &wallsToDraw)
 {
+	//Check for walls or Treasure surrounding player
 	for (int dRow = -m_levelWidth; dRow <= m_levelWidth; dRow += m_levelWidth)
 		for (int dCol = -1; dCol <= 1; ++dCol)
-			//if (dRow == 0 || dCol == 0)
-				if (m_tempLevel[pos + dRow + dCol] == wall || m_tempLevel[pos + dRow + dCol] == 'T')
+				if (level[pos + dRow + dCol] == wall || level[pos + dRow + dCol] == 'T' || level[pos + dRow + dCol] == 'L')
 					wallsToDraw.push_back(pos + dRow + dCol); 
+}
+
+bool Level::NoWallUp(int pos, vector<char> level)
+{
+	if (level[pos - m_levelWidth] == wall)
+		return false;
+	return true;
+}
+
+bool Level::NoWallDown(int pos, vector<char> level)
+{
+	if (level[pos + m_levelWidth] == wall)
+		return false;
+	return true;
+}
+
+bool Level::NoWallLeft(int pos, vector<char> level)
+{
+	if (level[pos - 1] == wall)
+		return false;
+	return true;
+}
+
+bool Level::NoWallRight(int pos, vector<char> level)
+{
+	if (level[pos + 1] == wall)
+		return false;
+	return true;
+}
+
+int Level::GetX(int pos)
+{
+	return pos % m_levelWidth;
+}
+
+int Level::GetY(int pos)
+{
+	return pos / m_levelWidth;
+}
+
+std::wstring Level::ScoreAsWstring(int score)
+{
+	LPCWSTR temp = L"Only ";
+	wchar_t buffer[256];
+	wsprintfW(buffer, L"%d", score);
+	LPCWSTR temp2 = buffer;
+	LPCWSTR temp3 = L" To Go!";
+	std::wstring combine = std::wstring(temp) + temp2;
+	std::wstring combine2 = std::wstring(combine) + temp3;
+	return combine2;
 }
 
 
