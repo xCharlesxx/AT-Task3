@@ -74,7 +74,7 @@ void Game::Update(DX::StepTimer const& timer)
 			NULL,
 			(LPCWSTR)m_level->ScoreAsWstring(m_level->totalScore - m_level->score).c_str(),
 			(LPCWSTR)L"Score",
-			MB_ICONWARNING | MB_DEFBUTTON2);
+			MB_ICONINFORMATION | MB_DEFBUTTON2);
 
 	if (kb.Left && !LeftKeyDown)
 	{
@@ -151,7 +151,7 @@ void Game::Update(DX::StepTimer const& timer)
 			NULL,
 			(LPCWSTR)L"You found all the coins in this Level! Let's search the next one!",
 			(LPCWSTR)L"Coin Collecter",
-			MB_ICONWARNING | MB_DEFBUTTON2);
+			MB_ICONINFORMATION | MB_DEFBUTTON2);
 		m_level->levelNum++; 
 		m_currentLevel = m_level->GetLevel(m_spriteFactory);
 	}
@@ -446,5 +446,5 @@ void Game::OuchFire()
 		NULL,
 		(LPCWSTR)L"AHH Fire Hot!",
 		(LPCWSTR)L"Coin Collecter",
-		MB_ICONWARNING | MB_DEFBUTTON2);
+		MB_ICONINFORMATION | MB_DEFBUTTON2);
 }

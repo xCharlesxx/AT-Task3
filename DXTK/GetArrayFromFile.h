@@ -20,6 +20,7 @@ public:
 				(LPCWSTR)L"Error Cannot Open File",
 				(LPCWSTR)L"Obtaining Level Structure",
 				MB_ICONWARNING | MB_DEFBUTTON2);
+			PostQuitMessage(0);
 		}
 		//Whilst not end of file, print file to vector 
 		if (!file.eof())
@@ -34,6 +35,7 @@ public:
 				(LPCWSTR)L"Error Reading from File",
 				(LPCWSTR)L"Obtaining Level Structure",
 				MB_ICONWARNING | MB_DEFBUTTON2);
+			PostQuitMessage(0);
 		}
 		levelArray.erase(std::remove(levelArray.begin(), levelArray.end(), '\n'), levelArray.end());
 		return levelArray;

@@ -1,11 +1,16 @@
 #include "pch.h"
 #include "SpriteFactory.h"
+#include <iostream>
+#include <fstream>
 #include "Level.h"
 
 
 Level::Level()
 {
-	//std::getline("..\\LevelMaker\\LevelMaker\\GameName", gameName);
+	//Get level to use from GameName
+	std::ifstream game("..\\LevelMaker\\LevelMaker\\GameName.txt");
+	std::string temp((std::istreambuf_iterator<char>(game)), std::istreambuf_iterator<char>()); 
+	gameName = temp; 
 }
 
 
@@ -32,7 +37,7 @@ vector<char> Level::GetLevel(SpriteFactory* SF)
 		NULL,
 		(LPCWSTR)L"Chester the Treasure Chest has lost his Treasure, Help Him Find it!\nPress 'S' to See How Many Are Left!",
 		(LPCWSTR)L"Chester's Fable",
-		MB_ICONWARNING | MB_DEFBUTTON2);
+		MB_ICONINFORMATION | MB_DEFBUTTON2);
 
 	return level; 
 }
@@ -42,6 +47,8 @@ void Level::PrintLevel(vector<char>& level)
 	visibleSprites.clear(); 
 	vector<int> corridorsInView;
 	vector<int> wallsToDraw;
+	if (level.size() == 0)
+		return; 
 	if (level[m_playerPos] == wall)
 		MessageBox(
 			NULL,
