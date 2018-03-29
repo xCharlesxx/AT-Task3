@@ -24,6 +24,8 @@ vector<char> Level::GetLevel(SpriteFactory* SF)
 	GetArrayFromFile item; 
 	vector<char> level; 
 	level = item.GetVector(m_fileLocation); 
+	m_levelHeight = item.gridHeight; 
+	m_levelWidth = item.gridWidth; 
 	m_SF = SF; 
 	int startX = m_levelWidth / 2; 
 	int startY = m_levelHeight / 2; 
