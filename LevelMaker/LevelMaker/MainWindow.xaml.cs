@@ -284,6 +284,7 @@ namespace LevelMaker
             }
         }
 
+        //Create heightMap
         private void ProcedurallyGenerate()
         {
             Random rnd = new Random();
@@ -291,12 +292,15 @@ namespace LevelMaker
             {
                 for (int column = 0; column < gridWidth; column++)
                 {
+                    //If not on boundries of map
                     if (column != 0 && row != 0 && column != totalSize - 1 && row != totalSize - 1)
                     {
                         heightMapArray[column, row] += AverageSurroundingHeight(column, row);
                     }
-                    float random = ((float)rnd.Next(1, 1000) / 250);
-                    if (random < 3.9)
+                    //Get random float between 0.001 and 1
+                    float random = ((float)rnd.Next(1, 1000) / 1000);
+                    //If float not in 99th percentile
+                    if (random < 0.99)
                         random = 0;
                     else
                         random = 10;
@@ -309,6 +313,7 @@ namespace LevelMaker
 
         private void HeightToType(int column, int row)
         {
+            //Depending on height change tile type
             switch (heightMapArray[column, row])
             {
                 case float n when (n <= 10):
@@ -335,6 +340,7 @@ namespace LevelMaker
 
         private float AverageSurroundingHeight(int column, int row)
         {
+            //Average surrounding tiles height to create smooth inclines
             float result = 0;
             for (int dRow = -1; dRow <= 1; ++dRow)
                 for (int dCol = -1; dCol <= 1; ++dCol)
