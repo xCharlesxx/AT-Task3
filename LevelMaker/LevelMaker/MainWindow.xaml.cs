@@ -21,7 +21,7 @@ namespace LevelMaker
     public partial class MainWindow : Window
     {
         static int totalSize = 75;
-        static int minHeight = 500;
+        static int minHeight = 475;
         static int minWidth = 150;
         static int primStartX;
         static int primStartY;
@@ -106,7 +106,7 @@ namespace LevelMaker
                     {
                         Width = tileSize,
                         Height = tileSize,
-                        Fill = Brushes.LightGray,
+                        Fill = wallColour,
                         Stroke = Brushes.Gray,
                         StrokeThickness = 0,
                     };
@@ -116,10 +116,6 @@ namespace LevelMaker
                     canvas.Children.Add(tileArray[column, row]);
                     Canvas.SetLeft(tileArray[column, row], tileSize * column);
                     Canvas.SetTop(tileArray[column, row], tileSize * row);
-                    //if (row == totalSize - 1 || column == totalSize - 1 || column == 0 || row == 0)
-                    //{
-                    //    tileArray[column, row].Fill = Brushes.Purple;
-                    //}
                 }
             }
         }
@@ -254,7 +250,7 @@ namespace LevelMaker
                     i++;
                     if (row == gridHeight - 1 || column == gridWidth - 1 || column == 0 || row == 0)
                     {
-                        tileArray[column, row].Fill = Brushes.Black;
+                        tileArray[column, row].Fill = wallColour;
                     }
                 }
             }
@@ -266,7 +262,7 @@ namespace LevelMaker
             return !regex.IsMatch(text);
         }
 
-        //Generate code
+        //Generate Height Map
         //ClearHeightMap();
         //Random rnd = new Random();
         //int x = rnd.Next(4, 5); 
@@ -353,6 +349,7 @@ namespace LevelMaker
         private void Prims()
         {
             AllWalls();
+            wallList.Clear(); 
             tileArray[primStartX, primStartY].Fill = corridorColour;
             GetWalls(primStartX, primStartY);
             Random rand = new Random();
@@ -639,12 +636,12 @@ namespace LevelMaker
             if (leftButtonDown)
                 rect_MouseLeftButtonDown(sender, e);
             else if (rightButtonDown)
-                ((Rectangle)sender).Fill = Brushes.LightGray;
+                ((Rectangle)sender).Fill = corridorColour;
         }
 
         private void rect_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
-            ((Rectangle)sender).Fill = Brushes.LightGray;
+            ((Rectangle)sender).Fill = corridorColour;
         }
 
         private void rect_MouseLeftButtonDown(object sender, MouseEventArgs e)

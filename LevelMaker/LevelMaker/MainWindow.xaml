@@ -10,7 +10,7 @@
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         MouseRightButtonUp="Window_MouseRightButtonUp"
         MouseLeftButtonUp="Window_MouseLeftButtonUp">
-    <Grid Margin="0,0,2,0">
+    <Grid Margin="0,-1,2,1">
         <ComboBox x:Name="TileType" HorizontalAlignment="Left" Margin="0,32,5,0" VerticalAlignment="Top" Width="120" SelectedIndex="0">
             <ComboBoxItem Content="Wall"/>
             <ComboBoxItem Content="Treasure"/>
@@ -21,7 +21,7 @@
         <Label x:Name="label" Content="Tile Type" HorizontalAlignment="Left" Margin="0,7,69,0" VerticalAlignment="Top"/>
         <Canvas x:Name="canvas" HorizontalAlignment="Left" Height="471" VerticalAlignment="Top" Width="459" Margin="132,0,0,0"/>
         <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="0,78,5,0" TextWrapping="Wrap" Text="New Game" VerticalAlignment="Top" Width="120"/>
-        <Button x:Name="ExportButton" Content="Export" HorizontalAlignment="Left" Margin="0,300,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+        <Button x:Name="ExportButton" Content="Export" HorizontalAlignment="Left" Margin="0,260,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
         <Label x:Name="label1" Content="Game Name" HorizontalAlignment="Left" Margin="0,56,48,0" VerticalAlignment="Top"/>
         <ComboBox x:Name="LevelNumber" HorizontalAlignment="Left" Margin="0,224,5,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
             <ComboBoxItem Content="1"/>
@@ -32,25 +32,18 @@
             <ComboBoxItem Content="6"/>
         </ComboBox>
         <Label x:Name="label2" Content="Level Number" HorizontalAlignment="Left" Margin="0,198,6,0" VerticalAlignment="Top"/>
-        <Button x:Name="Load" Content="Load" HorizontalAlignment="Left" Margin="0,321,0,0" VerticalAlignment="Top" Width="75" Click="Load_Click"/>
-        <Label x:Name="label4" Content="Level Theme" HorizontalAlignment="Left" Margin="0,249,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="LevelType" HorizontalAlignment="Left" Margin="0,275,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0">
-            <ComboBoxItem Content="Normal"/>
-            <ComboBoxItem Content="Future"/>
-            <ComboBoxItem Content="Ice"/>
-            <ComboBoxItem Content="Desert"/>
-        </ComboBox>
+        <Button x:Name="Load" Content="Load" HorizontalAlignment="Left" Margin="0,285,0,0" VerticalAlignment="Top" Width="75" Click="Load_Click"/>
         <Slider Name="SliderX" Maximum="75" IsSnapToTickEnabled="True" TickFrequency="1" HorizontalAlignment="Left" Margin="0,132,5,0" VerticalAlignment="Top" Width="120" ValueChanged="SliderX_ValueChanged" />
         <Slider Name="SliderY" Maximum="75" IsSnapToTickEnabled="True" TickFrequency="1" HorizontalAlignment="Left" Margin="0,181,5,0" VerticalAlignment="Top" Width="120" ValueChanged="SliderY_ValueChanged"/>
         <Label x:Name="xSliderLabel" Content="X" HorizontalAlignment="Left" Margin="0,104,110,0" VerticalAlignment="Top"/>
         <Label x:Name="ySliderLabel" Content="Y" HorizontalAlignment="Left" Margin="0,153,110,0" VerticalAlignment="Top"/>
         <TextBox Name="XValue" PreviewTextInput="PreviewTextInput" Text="0" HorizontalAlignment="Left" Height="23" Margin="19,107,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="69" TextChanged="XValue_TextChanged"/>
         <TextBox x:Name="YValue" PreviewTextInput="PreviewTextInput" Text="0" HorizontalAlignment="Left" Height="23" Margin="19,156,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="69" TextChanged="YValue_TextChanged"/>
-        <Button x:Name="Generate" Content="Generate" HorizontalAlignment="Left" Margin="0,342,0,0" VerticalAlignment="Top" Width="75" Click="Generate_Click"/>
-        <Button x:Name="PrimsButton" Content="Prim's" HorizontalAlignment="Left" Margin="0,363,0,0" VerticalAlignment="Top" Width="75" Click="PrimsButton_Click"/>
-        <Button x:Name="FloodFill" Content="Flood" HorizontalAlignment="Left" Margin="0,384,0,0" VerticalAlignment="Top" Width="75" Click="FloodFill_Click"/>
+        <Button x:Name="Generate" Content="Generate" HorizontalAlignment="Left" Margin="0,310,0,0" VerticalAlignment="Top" Width="75" Click="Generate_Click"/>
+        <Button x:Name="PrimsButton" Content="Prim's" HorizontalAlignment="Left" Margin="0,335,0,0" VerticalAlignment="Top" Width="75" Click="PrimsButton_Click"/>
+        <Button x:Name="FloodFill" Content="Flood" HorizontalAlignment="Left" Margin="0,360,0,0" VerticalAlignment="Top" Width="75" Click="FloodFill_Click"/>
         <CheckBox x:Name="CheckLines" Content="Grid Lines" HorizontalAlignment="Left" Margin="42,228,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked" Unchecked="CheckBox_Checked"/>
-        <Button x:Name="AddDetail" Content="Add Detail" HorizontalAlignment="Left" Margin="0,405,0,0" VerticalAlignment="Top" Width="75" Click="AddDetail_Click"/>
-        <Button x:Name="MakeRooms" Content="Make Rooms" HorizontalAlignment="Left" Margin="0,426,0,0" VerticalAlignment="Top" Width="75" Click="MakeRooms_Click"/>
+        <Button x:Name="AddDetail" Content="Add Detail" HorizontalAlignment="Left" Margin="0,385,0,0" VerticalAlignment="Top" Width="75" Click="AddDetail_Click"/>
+        <Button x:Name="MakeRooms" Content="Make Rooms" HorizontalAlignment="Left" Margin="0,410,0,0" VerticalAlignment="Top" Width="75" Click="MakeRooms_Click"/>
     </Grid>
 </Window>
