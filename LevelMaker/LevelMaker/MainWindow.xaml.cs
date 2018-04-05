@@ -25,8 +25,8 @@ namespace LevelMaker
         static int minWidth = 150;
         static int primStartX;
         static int primStartY;
-        int gridHeight = 75;
-        int gridWidth = 75;
+        int gridHeight = 50;
+        int gridWidth = 50;
         bool leftButtonDown = false;
         bool rightButtonDown = false;
         int tileSize = 10;
@@ -428,6 +428,7 @@ namespace LevelMaker
 
         private void FloodFiller()
         {
+            ReFlood(); 
             tileArray[primStartX, primStartY].Fill = corridorColour; 
             for (int row = 0; row < gridHeight; row++)
             {
@@ -459,8 +460,17 @@ namespace LevelMaker
             return; 
         }
 
+        private void ReFlood()
+        {
+            for (int row = 0; row < gridHeight; row++)
+                for (int column = 0; column < gridWidth; column++)
+                    if (tileArray[column, row].Fill == Brushes.Blue)
+                        tileArray[column, row].Fill = corridorColour;
+        }
+
         private void Detail()
         {
+            ReFlood(); 
             //PreProcessing
             for (int row = 0; row < gridHeight; row++)
             {
