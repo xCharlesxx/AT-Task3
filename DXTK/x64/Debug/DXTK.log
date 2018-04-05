@@ -1,13 +1,2 @@
-﻿  pch.cpp
-  SpriteHelpers.cpp
-  SpriteFactory.cpp
-  Sprite.cpp
-d:\charlie\at-task3\dxtk\sprite.cpp(85): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-  Main.cpp
-  Level.cpp
-  Game.cpp
-  Generating Code...
-  LINK : D:\Charlie\AT-Task3\x64\Debug\DXTK.exe not found or not built by the last incremental link; performing full link
-     Creating library D:\Charlie\AT-Task3\x64\Debug\DXTK.lib and object D:\Charlie\AT-Task3\x64\Debug\DXTK.exp
-  DXTK.vcxproj -> D:\Charlie\AT-Task3\x64\Debug\DXTK.exe
+﻿  DXTK.vcxproj -> D:\Charlie\AT-Task3\x64\Debug\DXTK.exe
   DXTK.vcxproj -> D:\Charlie\AT-Task3\x64\Debug\DXTK.pdb (Partial PDB)

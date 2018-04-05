@@ -37,7 +37,7 @@ vector<char> Level::GetLevel(SpriteFactory* SF)
 
 	MessageBox(
 		NULL,
-		(LPCWSTR)L"Chester the Treasure Chest has lost his Treasure, Help Him Find it!\nPress 'S' to See How Many Are Left!",
+		(LPCWSTR)L"Chester the Treasure Chest has lost his Treasure, Help Him Find it!\nPress 'C' to See How Many Are Left!",
 		(LPCWSTR)L"Chester's Fable",
 		MB_ICONINFORMATION | MB_DEFBUTTON2);
 

@@ -69,14 +69,14 @@ void Game::Update(DX::StepTimer const& timer)
 	
 	if (kb.Escape)
 		PostQuitMessage(0);
-	if (kb.S)
+	if (kb.C)
 		MessageBox(
 			NULL,
 			(LPCWSTR)m_level->ScoreAsWstring(m_level->totalScore - m_level->score).c_str(),
 			(LPCWSTR)L"Score",
 			MB_ICONINFORMATION | MB_DEFBUTTON2);
 
-	if (kb.Left && !LeftKeyDown)
+	if ((kb.Left || kb.A) && !LeftKeyDown)
 	{
 	    if (m_currentLevel[m_level->m_playerPos + 1] == '0')
 			OuchWall();
@@ -89,7 +89,7 @@ void Game::Update(DX::StepTimer const& timer)
 		LeftKeyDown = true; 
 	}
 
-	if (kb.Right && !RightKeyDown)
+	if ((kb.Right || kb.D) && !RightKeyDown)
 	{
 		if (m_currentLevel[m_level->m_playerPos - 1] == '0')
 			OuchWall();
@@ -102,7 +102,7 @@ void Game::Update(DX::StepTimer const& timer)
 		RightKeyDown = true;
 	}
 
-	if (kb.Up && !UpKeyDown)
+	if ((kb.Up || kb.W) && !UpKeyDown)
 	{	
 		if (m_currentLevel[m_level->m_playerPos + m_level->m_levelWidth] == '0')
 			OuchWall();
@@ -115,7 +115,7 @@ void Game::Update(DX::StepTimer const& timer)
 		UpKeyDown = true;
 	}
 
-	if (kb.Down && !DownKeyDown)
+	if ((kb.Down || kb.S) && !DownKeyDown)
 	{
 		if (m_currentLevel[m_level->m_playerPos - m_level->m_levelWidth] == '0')
 			OuchWall();
@@ -128,13 +128,13 @@ void Game::Update(DX::StepTimer const& timer)
 		DownKeyDown = true;
 	}
 
-	if (kb.IsKeyUp(DirectX::Keyboard::Left))
+	if (kb.IsKeyUp(DirectX::Keyboard::Left)  && kb.IsKeyUp(DirectX::Keyboard::A))
 		LeftKeyDown = false; 
-	if (kb.IsKeyUp(DirectX::Keyboard::Right))
+	if (kb.IsKeyUp(DirectX::Keyboard::Right) && kb.IsKeyUp(DirectX::Keyboard::D))
 		RightKeyDown = false;
-	if (kb.IsKeyUp(DirectX::Keyboard::Up))
+	if (kb.IsKeyUp(DirectX::Keyboard::Up)    && kb.IsKeyUp(DirectX::Keyboard::W))
 		UpKeyDown = false;
-	if (kb.IsKeyUp(DirectX::Keyboard::Down))
+	if (kb.IsKeyUp(DirectX::Keyboard::Down)  && kb.IsKeyUp(DirectX::Keyboard::S))
 		DownKeyDown = false;
 
 	if (tock > 0.1f)
